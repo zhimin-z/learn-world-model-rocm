@@ -1,8 +1,10 @@
-# Deploy General-Purpose Physical AI on AMD ROCm in 15 Minutes
+# 15 分钟在 AMD ROCm 上部署通用 Physical AI
 
-![Preface](images/preface_en.png)
+> 📍 **新手？** 请查看 [**RUNNING_THIS_TUTORIAL.md**](RUNNING_THIS_TUTORIAL.md)，了解在哪里以及如何运行本教程 —— 如何获取免费的 AMD GPU 算力（compute hours）并在 Radeon Cloud 上启动 notebook。
 
-*π0.5 is the worked example for fast setup and first inference*
+![Preface](images/preface.png)
+
+*π0.5 是用于快速配置和首次推理（first inference）的示例策略*
 
 [![ROCm](https://img.shields.io/badge/ROCm-7.x-00A3E0?logo=amd)](https://rocm.docs.amd.com/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.9+-EE4C2C?logo=pytorch)](https://pytorch.org/)
@@ -10,83 +12,83 @@
 [![Notebook](https://img.shields.io/badge/Jupyter-Notebook-F37626?logo=jupyter)](https://jupyter.org/)
 [![LeRobot](https://img.shields.io/badge/LeRobot-pi05-111111)](https://github.com/huggingface/lerobot)
 
-This tutorial is built to get a general-purpose Physical AI model running on AMD ROCm quickly.
-It uses π0.5 as the example policy, then validates the GPU runtime, runs a synthetic inference pass, and prepares a finetuning command for a custom dataset.
+本教程旨在快速让一个通用 Physical AI 模型在 AMD ROCm 上跑起来。
+它以 π0.5 作为示例策略（policy），随后验证 GPU 运行时（runtime）、运行一次合成推理（synthetic inference），并为自定义数据集准备一条 finetuning 命令。
 
-## Why This Exists
+## 为什么要做这个
 
-The goal is to make a world-model / vision-language-action workflow usable on ROCm without turning the notebook into a fragile one-off demo.
+目标是让 world-model / vision-language-action 工作流在 ROCm 上可用，而不把 notebook 变成一个脆弱的一次性 demo。
 
-In practice, that means the notebook covers only the pieces that matter for a real deployment of a Physical AI model:
+实际上，这意味着 notebook 只覆盖对真正部署 Physical AI 模型至关重要的部分：
 
-- Deploying a general-purpose Physical AI / VLA model on AMD hardware
-- Verifying that ROCm, BF16, and PyTorch/HIP are configured correctly
-- Loading π0.5 weights locally as the example checkpoint
-- Proving the forward pass works before finetuning
-- Keeping the finetuning step explicit and opt-in
+- 在 AMD 硬件上部署通用 Physical AI / VLA 模型
+- 验证 ROCm、BF16 和 PyTorch/HIP 是否正确配置
+- 在本地加载 π0.5 权重（weights）作为示例 checkpoint
+- 在 finetuning 之前证明前向传播（forward pass）可以工作
+- 让 finetuning 步骤保持显式且需主动开启（opt-in）
 
-## What The Notebook Does
+## Notebook 做了什么
 
-The notebook is intentionally structured as a checkpointed walkthrough:
+notebook 有意构建为一个带 checkpoint 的逐步演练（walkthrough）：
 
-1. Verify ROCm and Python
-2. Install LeRobot and supporting packages
-3. Download or verify π0.5 weights
-4. Run a dummy inference pass
-5. Print a finetuning command template
-6. Summarize `tunableop_results0.csv` as a validation artifact
+1. 验证 ROCm 和 Python
+2. 安装 LeRobot 及配套包
+3. 下载或验证 π0.5 权重
+4. 运行一次 dummy 推理
+5. 打印一条 finetuning 命令模板
+6. 汇总 `tunableop_results0.csv` 作为验证产物（validation artifact）
 
-Training does **not** start automatically. The notebook only launches finetuning if you set `run_training = True`.
+训练**不会**自动开始。只有当你设置 `run_training = True` 时，notebook 才会启动 finetuning。
 
-## Files
+## 文件
 
-- [`notebooks/pi0.5_rocm_tutorial.ipynb`](./notebooks/pi0.5_rocm_tutorial.ipynb) - end-to-end ROCm tutorial notebook
-- [`notebooks/tunableop_results0.csv`](./notebooks/tunableop_results0.csv) - backend validation artifact produced by TunableOp/ROCm tuning
+- [`notebooks/pi0.5_rocm_tutorial.ipynb`](./notebooks/pi0.5_rocm_tutorial.ipynb) - 端到端 ROCm 教程 notebook
+- [`notebooks/tunableop_results0.csv`](./notebooks/tunableop_results0.csv) - 由 TunableOp/ROCm 调优产生的后端验证产物（backend validation artifact）
 
-## Expected Output
+## 预期输出
 
-When the notebook is working correctly, you should see:
+当 notebook 正常工作时，你应当看到：
 
-- `torch.cuda.is_available()` returning `True`
-- ROCm reporting a gfx1100-class AMD GPU
-- BF16 support enabled
-- `lerobot[pi]` importing successfully
-- `PI05Policy` loading from local weights
-- A dummy forward pass returning an action chunk shaped like `torch.Size([1, 50, 32])`
-- A finetuning command printed to the screen without launching automatically
+- `torch.cuda.is_available()` 返回 `True`
+- ROCm 报告一块 gfx1100 级别的 AMD GPU
+- BF16 支持已启用
+- `lerobot[pi]` 成功导入
+- `PI05Policy` 从本地权重加载
+- 一次 dummy 前向传播返回形如 `torch.Size([1, 50, 32])` 的 action chunk
+- 一条 finetuning 命令打印到屏幕上，而不会自动启动
 
-For the TunableOp CSV, the expected content is:
+对于 TunableOp CSV，预期内容为：
 
-- metadata fields describing `PT_VERSION`, `HIP_VERSION`, `HIPBLASLT_VERSION`, and `GCN_ARCH_NAME`
-- benchmark rows for TunableOp/GEMM validation
-- numeric timing values that can be summarized into a range and mean
+- 描述 `PT_VERSION`、`HIP_VERSION`、`HIPBLASLT_VERSION` 和 `GCN_ARCH_NAME` 的元数据字段
+- 用于 TunableOp/GEMM 验证的 benchmark 行
+- 可汇总为区间和均值的数值计时（timing）值
 
-## Artifact Meaning
+## 产物的含义
 
-`tunableop_results0.csv` is useful as a backend sanity check, but it is not the finetuning result itself.
+`tunableop_results0.csv` 可作为后端的健全性检查（sanity check），但它本身并不是 finetuning 的结果。
 
-Treat it as evidence that:
+将它视为以下事项的证据：
 
-- ROCm tuning ran
-- the backend emitted benchmark measurements
-- the environment was able to complete a representative set of GEMM/TunableOp checks
+- ROCm 调优已运行
+- 后端已发出 benchmark 测量值
+- 环境能够完成一组有代表性的 GEMM/TunableOp 检查
 
-Do not present it as proof that finetuning completed unless the notebook also runs the training cell with `run_training = True`.
+除非 notebook 同时以 `run_training = True` 运行训练单元（training cell），否则不要把它当作 finetuning 已完成的证明。
 
-## Quick Start
+## 快速开始（Quick Start）
 
-1. Open [`notebooks/pi0.5_rocm_tutorial.ipynb`](./notebooks/pi0.5_rocm_tutorial.ipynb) in Jupyter.
-2. Run the cells in order.
-3. Confirm the environment, dependency installation, and weight loading steps pass.
-4. Run the dummy inference cell.
-5. Edit the finetuning template with your dataset and only then enable training.
+1. 在 Jupyter 中打开 [`notebooks/pi0.5_rocm_tutorial.ipynb`](./notebooks/pi0.5_rocm_tutorial.ipynb)。
+2. 按顺序运行各单元（cells）。
+3. 确认环境、依赖安装和权重加载步骤通过。
+4. 运行 dummy 推理单元。
+5. 用你的数据集编辑 finetuning 模板，然后再启用训练。
 
-## Notes
+## 备注
 
-- The notebook targets AMD ROCm on RDNA3-class hardware.
-- The tutorial uses `cuda` APIs because PyTorch exposes HIP through the same interface on ROCm.
-- The CSV file may be regenerated by running the notebook or related tuning steps; it should be treated as an artifact, not a hand-edited report.
+- 本 notebook 面向 RDNA3 级别硬件上的 AMD ROCm。
+- 本教程使用 `cuda` API，因为在 ROCm 上 PyTorch 通过同一套接口暴露 HIP。
+- CSV 文件可通过运行 notebook 或相关调优步骤重新生成；应将其视为产物（artifact），而非手工编辑的报告。
 
-## License
+## 许可证（License）
 
-Follow the license terms of the upstream model and the packages used in the notebook. If you publish this repository, verify the redistribution terms for the model weights separately.
+请遵循上游模型以及 notebook 中所用各软件包的许可条款。如果你公开发布本仓库，请单独核实模型权重的再分发（redistribution）条款。
