@@ -1,6 +1,16 @@
 # 在哪里以及如何运行本教程
 
-本教程设计为在通过 AMD AI Developer Program 和 Radeon Cloud 提供的 **AMD GPU 云实例** 上运行。请按照下面的步骤获取免费算力并启动 notebook。
+## 方式一：使用你自己的 AMD GPU 硬件（推荐，如果你有的话）
+
+如果你本地已经有一块受 ROCm 支持的 AMD GPU，**完全可以直接在自己的机器上运行本教程**，无需申请云算力。
+
+**硬件要求：** 推荐使用 **RDNA3 级别（gfx1100，例如 Radeon RX 7900 XTX / 7900 XT / W7900）或更新** 的 AMD GPU，并搭配 ROCm 7.x。更早的架构可能可以工作，但本教程是在 gfx1100 上验证的，不保证在更老的卡上获得相同结果。
+
+满足条件后，你只需在本地准备好 ROCm 7.x + PyTorch 环境，克隆本仓库，直接打开并运行 [`notebooks/pi0.5_rocm_tutorial.ipynb`](notebooks/pi0.5_rocm_tutorial.ipynb) 即可，可以跳过下面的云端步骤。
+
+## 方式二：使用 AMD GPU 云实例（没有本地硬件时）
+
+如果你没有满足要求的 AMD GPU，本教程也设计为可在通过 AMD AI Developer Program 和 Radeon Cloud 提供的 **AMD GPU 云实例** 上运行。请按照下面的步骤获取免费算力并启动 notebook。
 
 ## 1. 注册 AMD Developer 账号
 
